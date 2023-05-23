@@ -5,7 +5,7 @@ import requests
 
 url = os.environ.get('YOUTRACK_URL')
 api_key = os.environ.get('YOUTRACK_KEY')
-template_file = 'template.txt'
+template_file = os.environ.get('YOUTRACK_TEMPLATE')
 
 headers = {
     'Authorization': f'Bearer {api_key}',
