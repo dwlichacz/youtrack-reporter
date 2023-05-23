@@ -1,19 +1,44 @@
-import requests
 import os
+import re
+
+import requests
 
 url = os.environ.get('YOUTRACK_URL')
-key = os.environ.get('YOUTRACK_KEY')
+api_key = os.environ.get('YOUTRACK_KEY')
 
 headers = {
-    'Authorization': f'Bearer {key}',
+    'Authorization': f'Bearer {api_key}',
     'Accept': 'application/json',
     'Cache-Control': 'no-cache',
     'Content-Type': 'application/json'
 }
 
 
-def call_api_for_issue(issue_id):
+def parse_description(input_string):
+    no_bold_string = input_string.replace('*', '')
 
+    patterns = {
+        "Challenge": r"Challenge:\s*(.*)",
+        "Asset": r"Asset:\s*(.*)",
+        "Title": r"Title:\s*(.*)",
+        "Description": r"Description:\s*((?:.|\n(?!\n))+)",
+        "Start Date": r"Start Date:\s*(.*)",
+        "End Date": r"End Date:\s*(.*)",
+    }
+
+    extracted_values = {}
+
+    for key, pattern in patterns.items():
+        match = re.search(pattern, no_bold_string)
+        if match:
+            value = match.group(1).strip()
+            extracted_values[key] = value
+
+    return extracted_values['Challenge'], extracted_values['Asset'], extracted_values['Title'], \
+        extracted_values['Description'], extracted_values['Start Date'], extracted_values['End Date']
+
+
+def call_api_for_issue(issue_id):
     full_url = url + f'issues/{issue_id}'
 
     params = {
@@ -28,7 +53,7 @@ def call_api_for_issue(issue_id):
         retrieved_data = response.json()
         title = retrieved_data['summary']
         description = retrieved_data['description']
-
+        challenge, asset, inbox_title, inbox_description, start_date, end_date = parse_description(description)
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
