@@ -17,7 +17,7 @@ def call_api_for_issue(issue_id):
     full_url = url + f'issues/{issue_id}'
 
     params = {
-        'fields': 'summary'
+        'fields': 'summary,description'
     }
 
     response = requests.get(full_url,
@@ -27,6 +27,7 @@ def call_api_for_issue(issue_id):
     if response.status_code == 200:
         retrieved_data = response.json()
         title = retrieved_data['summary']
+        description = retrieved_data['description']
 
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
