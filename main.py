@@ -106,7 +106,32 @@ def call_api_for_comments(issue_id):
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
 
+def fill_in_template(issue_id):
+    with open('template.txt', 'r') as file:
+        template_string = file.read()
+
+    title, challenge, asset, gift_id, inbox_title, \
+        inbox_description, start_time, end_time = call_api_for_issue(issue_id)
+    query = call_api_for_comments(issue_id)
+
+    if not gift_id:
+        output = 'uid, prize'
+        promo_type = 'coin'
+        gift_id = 'null'
+        amount = 'prize'
+    else:
+        output = 'uid'
+        promo_type = 'card'
+        amount = 'null'
+
+    segment = 'placeholder_segment'
+
+    print(template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
+                                 end_time=end_time, query=query, segment=segment, promo_type=promo_type,
+                                 gift_id=gift_id, amount=amount, inbox_title=inbox_title,
+                                 inbox_description=inbox_description, view=asset))
+
+
 if __name__ == '__main__':
     issue = 'NC-17'
-    call_api_for_issue(issue)
-    call_api_for_comments(issue)
+    fill_in_template(issue)
