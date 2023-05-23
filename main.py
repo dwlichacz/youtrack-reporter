@@ -38,6 +38,27 @@ def parse_description(input_string):
         extracted_values['Description'], extracted_values['Start Date'], extracted_values['End Date']
 
 
+def parse_comments(comment_list):
+    matching_comments = [comment['text'] for comment in comment_list if "final query" in comment['text'].lower()]
+
+    if len(matching_comments) == 1:
+        # Find the content between "```sql" and "```"
+        query = ""
+        start = False
+        for line in matching_comments[0].splitlines():
+            if line.strip() == "```sql":
+                start = True
+            elif line.strip() == "```":
+                break
+            elif start:
+                query += line + "\n"
+
+        # Return the extracted query
+        return query.strip()
+    else:
+        return None
+
+
 def call_api_for_issue(issue_id):
     full_url = url + f'issues/{issue_id}'
 
@@ -71,6 +92,7 @@ def call_api_for_comments(issue_id):
 
     if response.status_code == 200:
         comments = response.json()
+        query = parse_comments(comments)
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
