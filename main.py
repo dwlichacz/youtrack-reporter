@@ -5,6 +5,7 @@ import requests
 
 url = os.environ.get('YOUTRACK_URL')
 api_key = os.environ.get('YOUTRACK_KEY')
+template_file = 'template.txt'
 
 headers = {
     'Authorization': f'Bearer {api_key}',
@@ -107,7 +108,7 @@ def call_api_for_comments(issue_id):
 
 
 def fill_in_template(issue_id):
-    with open('template.txt', 'r') as file:
+    with open(template_file, 'r') as file:
         template_string = file.read()
 
     title, challenge, asset, gift_id, inbox_title, \
