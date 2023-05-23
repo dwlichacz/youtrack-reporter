@@ -74,7 +74,10 @@ def call_api_for_issue(issue_id):
         retrieved_data = response.json()
         title = retrieved_data['summary']
         description = retrieved_data['description']
+
         challenge, asset, inbox_title, inbox_description, start_date, end_date = parse_description(description)
+
+        return title, challenge, asset, inbox_title, inbox_description, start_date, end_date
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
@@ -93,6 +96,7 @@ def call_api_for_comments(issue_id):
     if response.status_code == 200:
         comments = response.json()
         query = parse_comments(comments)
+        return query
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
