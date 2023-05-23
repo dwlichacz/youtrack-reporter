@@ -22,8 +22,8 @@ def parse_description(input_string):
         "Asset": r"Asset:\s*(.*)",
         "Title": r"Title:\s*(.*)",
         "Description": r"Description:\s*((?:.|\n(?!\n))+)",
-        "Start Date": r"Start Date:\s*(.*)",
-        "End Date": r"End Date:\s*(.*)",
+        "Start Time": r"Start Time:\s*(.*)",
+        "End Time": r"End Time:\s*(.*)",
     }
 
     extracted_values = {}
@@ -35,7 +35,7 @@ def parse_description(input_string):
             extracted_values[key] = value
 
     return extracted_values['Challenge'], extracted_values['Asset'], extracted_values['Title'], \
-        extracted_values['Description'], extracted_values['Start Date'], extracted_values['End Date']
+        extracted_values['Description'], extracted_values['Start Time'], extracted_values['End Time']
 
 
 def parse_comments(comment_list):
@@ -75,9 +75,9 @@ def call_api_for_issue(issue_id):
         title = retrieved_data['summary']
         description = retrieved_data['description']
 
-        challenge, asset, inbox_title, inbox_description, start_date, end_date = parse_description(description)
+        challenge, asset, inbox_title, inbox_description, start_time, end_time = parse_description(description)
 
-        return title, challenge, asset, inbox_title, inbox_description, start_date, end_date
+        return title, challenge, asset, inbox_title, inbox_description, start_time, end_time
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
