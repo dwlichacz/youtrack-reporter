@@ -58,6 +58,24 @@ def call_api_for_issue(issue_id):
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
 
+def call_api_for_comments(issue_id):
+    full_url = url + f'issues/{issue_id}/comments'
+
+    params = {
+        'fields': 'text'
+    }
+
+    response = requests.get(full_url,
+                            params=params,
+                            headers=headers)
+
+    if response.status_code == 200:
+        comments = response.json()
+    else:
+        print(f"Request failed with status code {response.status_code}: {response.text}")
+
+
 if __name__ == '__main__':
     issue = 'NC-17'
     call_api_for_issue(issue)
+    call_api_for_comments(issue)
