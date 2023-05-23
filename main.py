@@ -20,6 +20,7 @@ def parse_description(input_string):
     patterns = {
         "Challenge": r"Challenge:\s*(.*)",
         "Asset": r"Asset:\s*(.*)",
+        "Gift ID": r"Gift ID:\s*(.*)",
         "Title": r"Title:\s*(.*)",
         "Description": r"Description:\s*((?:.|\n(?!\n))+)",
         "Start Time": r"Start Time:\s*(.*)",
@@ -34,8 +35,12 @@ def parse_description(input_string):
             value = match.group(1).strip()
             extracted_values[key] = value
 
-    return extracted_values['Challenge'], extracted_values['Asset'], extracted_values['Title'], \
-        extracted_values['Description'], extracted_values['Start Time'], extracted_values['End Time']
+    # Account for case when there is no Gift ID
+    extracted_values.setdefault("Gift ID", None)
+
+    return extracted_values['Challenge'], extracted_values['Asset'], extracted_values['Gift ID'], \
+        extracted_values['Title'], extracted_values['Description'], extracted_values['Start Time'], \
+        extracted_values['End Time']
 
 
 def parse_comments(comment_list):
@@ -75,9 +80,9 @@ def call_api_for_issue(issue_id):
         title = retrieved_data['summary']
         description = retrieved_data['description']
 
-        challenge, asset, inbox_title, inbox_description, start_time, end_time = parse_description(description)
+        challenge, asset, gift_id, inbox_title, inbox_description, start_time, end_time = parse_description(description)
 
-        return title, challenge, asset, inbox_title, inbox_description, start_time, end_time
+        return title, challenge, asset, gift_id, inbox_title, inbox_description, start_time, end_time
     else:
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
