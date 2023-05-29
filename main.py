@@ -127,12 +127,34 @@ def fill_in_template(issue_id):
 
     segment = 'placeholder_segment'
 
-    print(template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
-                                 end_time=end_time, query=query, segment=segment, promo_type=promo_type,
-                                 gift_id=gift_id, amount=amount, inbox_title=inbox_title,
-                                 inbox_description=inbox_description, view=asset))
+    completed_template = template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
+                                                end_time=end_time, query=query, segment=segment, promo_type=promo_type,
+                                                gift_id=gift_id, amount=amount, inbox_title=inbox_title,
+                                                inbox_description=inbox_description, view=asset)
+
+    return completed_template, title
+
+
+def parse_file_title(input_string):
+    # Remove non-alphanumeric characters (excluding spaces)
+    alphanumeric_string = re.sub(r'[^a-zA-Z0-9\s]', '', input_string)
+
+    # Replace consecutive spaces with a single underscore
+    underscored_string = re.sub(r'\s+', '_', alphanumeric_string)
+
+    lowercase_string = underscored_string.lower()
+
+    return lowercase_string
+
+
+def write_final_file(issue_id):
+    file_text, title = fill_in_template(issue_id)
+    filename = parse_file_title(title)
+
+    with open(filename + '.md', "w") as file:
+        file.write(file_text)
 
 
 if __name__ == '__main__':
     issue = 'NC-17'
-    fill_in_template(issue)
+    write_final_file(issue)
