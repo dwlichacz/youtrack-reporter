@@ -9,6 +9,7 @@ import requests
 url = os.environ.get('YOUTRACK_URL')
 api_key = os.environ.get('YOUTRACK_KEY')
 template_file = os.environ.get('YOUTRACK_TEMPLATE')
+destination_path = os.environ.get('YOUTRACK_DESTINATION')
 
 headers = {
     'Authorization': f'Bearer {api_key}',
@@ -156,7 +157,7 @@ def write_final_file(issue_id):
     file_text, title = fill_in_template(issue_id)
     filename = parse_file_title(title)
 
-    with open(filename + '.md', "w") as file:
+    with open(destination_path + filename + '.md', "w") as file:
         file.write(file_text)
 
 
