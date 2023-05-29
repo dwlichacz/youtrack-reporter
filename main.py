@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 import os
 import re
 
+import click
 import requests
 
 url = os.environ.get('YOUTRACK_URL')
@@ -147,6 +150,8 @@ def parse_file_title(input_string):
     return lowercase_string
 
 
+@click.command()
+@click.argument('issue_id')
 def write_final_file(issue_id):
     file_text, title = fill_in_template(issue_id)
     filename = parse_file_title(title)
@@ -156,5 +161,4 @@ def write_final_file(issue_id):
 
 
 if __name__ == '__main__':
-    issue = 'NC-17'
-    write_final_file(issue)
+    write_final_file()
