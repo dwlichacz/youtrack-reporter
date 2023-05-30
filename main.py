@@ -1,11 +1,15 @@
+#!/usr/bin/env python
+
 import os
 import re
 
+import click
 import requests
 
 url = os.environ.get('YOUTRACK_URL')
 api_key = os.environ.get('YOUTRACK_KEY')
-template_file = 'template.txt'
+template_file = os.environ.get('YOUTRACK_TEMPLATE')
+destination_path = os.environ.get('YOUTRACK_DESTINATION')
 
 headers = {
     'Authorization': f'Bearer {api_key}',
@@ -107,7 +111,7 @@ def call_api_for_comments(issue_id):
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
 
-def fill_in_template(issue_id):
+def fill_in_template(issue_id, segment):
     with open(template_file, 'r') as file:
         template_string = file.read()
 
@@ -125,14 +129,36 @@ def fill_in_template(issue_id):
         promo_type = 'card'
         amount = 'null'
 
-    segment = 'placeholder_segment'
+    completed_template = template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
+                                                end_time=end_time, query=query, segment=segment, promo_type=promo_type,
+                                                gift_id=gift_id, amount=amount, inbox_title=inbox_title,
+                                                inbox_description=inbox_description, view=asset)
 
-    print(template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
-                                 end_time=end_time, query=query, segment=segment, promo_type=promo_type,
-                                 gift_id=gift_id, amount=amount, inbox_title=inbox_title,
-                                 inbox_description=inbox_description, view=asset))
+    return completed_template, title
+
+
+def parse_file_title(input_string):
+    # Remove non-alphanumeric characters (excluding spaces)
+    alphanumeric_string = re.sub(r'[^a-zA-Z0-9\s]', '', input_string)
+
+    # Replace consecutive spaces with a single underscore
+    underscored_string = re.sub(r'\s+', '_', alphanumeric_string)
+
+    lowercase_string = underscored_string.lower()
+
+    return lowercase_string
+
+
+@click.command()
+@click.option('--issue_id', required=True)
+@click.option('--segment', required=True)
+def write_final_file(issue_id, segment):
+    file_text, title = fill_in_template(issue_id, segment)
+    filename = parse_file_title(title)
+
+    with open(destination_path + filename + '.md', "w") as file:
+        file.write(file_text)
 
 
 if __name__ == '__main__':
-    issue = 'NC-17'
-    fill_in_template(issue)
+    write_final_file()
