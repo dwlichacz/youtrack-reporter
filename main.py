@@ -111,7 +111,7 @@ def call_api_for_comments(issue_id):
         print(f"Request failed with status code {response.status_code}: {response.text}")
 
 
-def fill_in_template(issue_id):
+def fill_in_template(issue_id, segment):
     with open(template_file, 'r') as file:
         template_string = file.read()
 
@@ -128,8 +128,6 @@ def fill_in_template(issue_id):
         output = 'uid'
         promo_type = 'card'
         amount = 'null'
-
-    segment = 'placeholder_segment'
 
     completed_template = template_string.format(title=title, challenge=challenge, output=output, start_time=start_time,
                                                 end_time=end_time, query=query, segment=segment, promo_type=promo_type,
@@ -152,9 +150,10 @@ def parse_file_title(input_string):
 
 
 @click.command()
-@click.argument('issue_id')
-def write_final_file(issue_id):
-    file_text, title = fill_in_template(issue_id)
+@click.option('--issue_id', required=True)
+@click.option('--segment', required=True)
+def write_final_file(issue_id, segment):
+    file_text, title = fill_in_template(issue_id, segment)
     filename = parse_file_title(title)
 
     with open(destination_path + filename + '.md', "w") as file:
